@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate Nbr Link</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+
+    <!-- Navigasi -->
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Generate Link</a>
+      <a href="#">Transaction History</a>
+      <a href="#">Policy</a>
+      <a href="#">Logout</a>
+    </nav>
+
+    <!-- Kontainer Utama -->
+    <div class="form-box">
+      <form action="output.php" method="POST" enctype="multipart/form-data" id="nbr-link-form">
+        <div class="form-layout">
+          <!-- Kolom Kiri (Upload Gambar) -->
+          <div class="left-side">
+            <div class="upload-box">
+              <div class="image-placeholder" id="imagePreview">
+                <span>No Image</span>
+              </div>
+              <label class="upload-btn">
+                Upload Picture
+                <input type="image" id="web_order_produk" name="assets" accept="image/*" hidden />
+              </label>
+            </div>
+          </div>
+
+          <!-- Kolom Kanan (Form Input) -->
+          <div class="right-side">
+            <!-- Title -->
+            <div class="form-group">
+              <label for="title">Title Here:</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                minlength="20"
+                placeholder="please input your product name."
+                required
+              />
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+              <label for="description">Description:</label>
+              <textarea
+                id="description"
+                name="description"
+                rows="4"
+                minlength="10"
+                maxlength="400"
+                placeholder="Describe your product here."
+              ></textarea>
+            </div>
+
+            <!-- Account Number -->
+            <div class="form-group">
+              <label for="account-number">Account Number:</label>
+              <input
+                type="text"
+                id="account-number"
+                name="account-number"
+                placeholder="Masukkan 12 digit angka"
+                inputmode="numeric"
+                pattern="[0-9]{12}"
+                maxlength="12"
+                title="Masukkan 12 digit angka"
+                required
+              />
+            </div>
+
+            <!-- Bank -->
+            <div class="form-group">
+              <label for="bank">Bank:</label>
+              <select id="bank" name="bank">
+                <option>HSBC</option>
+                <option>BCA</option>
+                <option>BNI</option>
+                <option>Mandiri</option>
+              </select>
+            </div>
+
+            <!-- Account Holder -->
+            <div class="form-group">
+              <label for="account-holder">Account Holder:</label>
+              <input
+                type="text"
+                id="account-holder"
+                name="account-holder"
+                value="Name Here"
+              />
+            </div>
+
+            <!-- Transaction -->
+            <div class="form-group">
+              <label for="transaction">Transaction:</label>
+              <select id="transaction" name="transaction">
+                <option value="">-- Select Transaction --</option>
+                <option value="1">1 Person</option>
+                <option value="2">2 Persons</option>
+                <option value="3">3 Persons</option>
+              </select>
+
+              <div class="checkboxes" style="margin-top:10px;">
+                <label>
+                  <input type="checkbox" name="send-mobile" checked />
+                  <b>Send to Mobile Phone</b>
+                </label>
+                <label>
+                  <input type="checkbox" name="send-email" checked />
+                  Send to Email
+                </label>
+              </div>
+            </div>
+
+            <!-- Send To -->
+            <div class="form-group">
+              <label for="mobile-number">Send to Mobile Phone:</label>
+              <input
+                type="text"
+                id="mobile-number"
+                name="mobile-number"
+                value="+2345678910, +2345678911"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Send to Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value="mmfmr29@bolton.ac.uk, ryb_06@yahoo.com"
+              />
+            </div>
+
+            <!-- Hidden Field untuk Gambar Base64 -->
+            <input type="hidden" name="imageData" id="imageData" />
+
+            <!-- Tombol Generate -->
+            <div class="button-group">
+              <button type="submit">Generate Nbr Link</button>
+            </div>
+          </div> <!-- end right-side -->
+        </div> <!-- end form-layout -->
+      </form>
+    </div> <!-- end form-box -->
+
+    <script>
+      // JS untuk Preview Gambar dan Simpan ke Hidden Input
+      const imageInput = document.getElementById("imageInput");
+      const imagePreview = document.getElementById("imagePreview");
+      const imageDataField = document.getElementById("imageData");
+
+      imageInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imagePreview.innerHTML =
+              '<img src="' +
+              e.target.result +
+              '" alt="Preview" style="width:100%; height:180px; object-fit:contain;">';
+            imageDataField.value = e.target.result; // Simpan base64 ke hidden input
+          };
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.innerHTML = "<span>No Image</span>";
+          imageDataField.value = "";
+        }
+      });
+    </script>
+  </body>
+</html>
