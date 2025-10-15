@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,49 +8,52 @@
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
   <body>
-
-    <!-- Navigasi -->
     <nav>
-      <a href="#">Home</a>
-      <a href="#">Generate Link</a>
+      <a href="index.html">Home</a>
+      <a href="index.html">Generate Link</a>
       <a href="#">Transaction History</a>
       <a href="#">Policy</a>
       <a href="#">Logout</a>
     </nav>
 
-    <!-- Kontainer Utama -->
-    <div class="form-box">
-      <form action="output.php" method="POST" enctype="multipart/form-data" id="nbr-link-form">
-        <div class="form-layout">
-          <!-- Kolom Kiri (Upload Gambar) -->
-          <div class="left-side">
-            <div class="upload-box">
-              <div class="image-placeholder" id="imagePreview">
-                <span>No Image</span>
-              </div>
-              <label class="upload-btn">
-                Upload Picture
-                <input type="image" id="web_order_produk" name="assets" accept="image/*" hidden />
-              </label>
+    <div id="container-form-nbr-link">
+      <div class="form-layout">
+        <div class="left-side">
+          <div class="upload-box">
+            <div class="image-placeholder" id="imagePreview">
+              <span>No Image</span>
             </div>
+            <label class="upload-btn">
+              Upload Picture
+              <input
+                type="file"
+                id="imageInput"
+                name="image"
+                accept="image/*"
+                hidden
+              />
+            </label>
           </div>
+        </div>
 
-          <!-- Kolom Kanan (Form Input) -->
-          <div class="right-side">
-            <!-- Title -->
+        <div class="right-side">
+          <form
+            action="output.php"
+            method="POST"
+            enctype="multipart/form-data"
+            id="nbr-link-form"
+          >
             <div class="form-group">
               <label for="title">Title Here:</label>
               <input
                 type="text"
                 id="title"
                 name="title"
-                minlength="20"
-                placeholder="please input your product name."
+                placeholder="Please input your product name."
                 required
               />
             </div>
 
-            <!-- Description -->
             <div class="form-group">
               <label for="description">Description:</label>
               <textarea
@@ -62,26 +66,21 @@
               ></textarea>
             </div>
 
-            <!-- Account Number -->
             <div class="form-group">
               <label for="account-number">Account Number:</label>
               <input
                 type="text"
                 id="account-number"
                 name="account-number"
-                placeholder="Masukkan 12 digit angka"
-                inputmode="numeric"
-                pattern="[0-9]{12}"
-                maxlength="12"
-                title="Masukkan 12 digit angka"
+                placeholder="Input your account number"
                 required
               />
             </div>
 
-            <!-- Bank -->
             <div class="form-group">
               <label for="bank">Bank:</label>
               <select id="bank" name="bank">
+                <option>Choose Your Bank</option>
                 <option>HSBC</option>
                 <option>BCA</option>
                 <option>BNI</option>
@@ -89,47 +88,41 @@
               </select>
             </div>
 
-            <!-- Account Holder -->
             <div class="form-group">
               <label for="account-holder">Account Holder:</label>
               <input
                 type="text"
                 id="account-holder"
                 name="account-holder"
-                value="Name Here"
+                placeholder="Name here"
               />
             </div>
 
-            <!-- Transactio -->
             <div class="form-group">
-              <label for="transaction">Transaction:</label>
-              <select id="transaction" name="transaction">
-                <option value="">-- Select Transaction --</option>
-                <option value="1">1 Person</option>
-                <option value="2">2 Persons</option>
-                <option value="3">3 Persons</option>
-              </select>
-
-              <div class="checkboxes" style="margin-top:10px;">
+              <label>Transaction:</label>
+              <p class="note">
+                * If the transaction is for 3 persons, choose 3 from the
+                drop-down list
+              </p>
+              <div class="checkboxes">
                 <label>
-                  <input type="checkbox" name="send-mobile" checked />
-                  <b>Send to Mobile Phone</b>
+                  <input type="checkbox" name="send-mobile" value="1" />
+                  Send to Mobile Phone
                 </label>
                 <label>
-                  <input type="checkbox" name="send-email" checked />
+                  <input type="checkbox" name="send-email" value="1" />
                   Send to Email
                 </label>
               </div>
             </div>
 
-            <!-- Send To -->
             <div class="form-group">
               <label for="mobile-number">Send to Mobile Phone:</label>
               <input
                 type="text"
                 id="mobile-number"
                 name="mobile-number"
-                value="+2345678910, +2345678911"
+                placeholder="Input your mobile phone number"
               />
             </div>
 
@@ -139,24 +132,23 @@
                 type="email"
                 id="email"
                 name="email"
-                value="mmfmr29@bolton.ac.uk, ryb_06@yahoo.com"
+                placeholder="Input your email"
               />
             </div>
 
-            <!-- Hidden Field untuk Gambar Base64 -->
             <input type="hidden" name="imageData" id="imageData" />
 
-            <!-- Tombol Generate -->
             <div class="button-group">
-              <button type="submit">Generate Nbr Link</button>
+              <button type="submit" name="submit" value="1">
+                Generate Nbr Link
+              </button>
             </div>
-          </div> <!-- end right-side -->
-        </div> <!-- end form-layout -->
-      </form>
-    </div> <!-- end form-box -->
+          </form>
+        </div>
+      </div>
+    </div>
 
     <script>
-      // JS untuk Preview Gambar dan Simpan ke Hidden Input
       const imageInput = document.getElementById("imageInput");
       const imagePreview = document.getElementById("imagePreview");
       const imageDataField = document.getElementById("imageData");
@@ -166,11 +158,8 @@
         if (file) {
           const reader = new FileReader();
           reader.onload = function (e) {
-            imagePreview.innerHTML =
-              '<img src="' +
-              e.target.result +
-              '" alt="Preview" style="width:100%; height:180px; object-fit:contain;">';
-            imageDataField.value = e.target.result; // Simpan base64 ke hidden input
+            imagePreview.innerHTML = <img src="${e.target.result}" alt="Preview" style="width:100%; height:180px; object-fit:contain;">;
+            imageDataField.value = e.target.result;
           };
           reader.readAsDataURL(file);
         } else {
@@ -179,5 +168,5 @@
         }
       });
     </script>
-  </body>
+  </body>
 </html>
