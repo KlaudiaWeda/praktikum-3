@@ -1,225 +1,165 @@
+
+
 <?php
-// Pastikan semua error ringan tidak mengganggu tampilan
-error_reporting(E_ALL & ~E_NOTICE);
-
-// Cek apakah form dikirim
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Ambil data dari form
-    $title        = $_POST["title"] ?? 'MacBook Air £800';
-    $year         = $_POST["year"] ?? '2004';
-    $model        = $_POST["model"] ?? 'Condition: Mint';
-    $amount       = $_POST["amount"] ?? '£800';
-    $payto        = $_POST["payto"] ?? '123-456-789-0';
-    $paymentType  = $_POST["payment-type"] ?? 'Visa Debit';
-    $holder       = $_POST["account-holder"] ?? 'Name Here';
-    $accountNum   = $_POST["account-number"] ?? '123-456-789-0';
-    $sendMobile   = isset($_POST["send-mobile"]);
-    $sendEmail    = isset($_POST["send-email"]);
-    $mobileNumber = $_POST["mobile-number"] ?? '1234567890, 1234567891';
-    $email        = $_POST["email"] ?? 'mmfmr29@stoton.ac.uk, fys_06@yahoo.com';
-
-    // Proses upload gambar
-    $imagePath = "";
-    if (!empty($_FILES["image"]["name"])) {
-        $targetDir = "uploads/";
-        if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
-        $targetFile = $targetDir . basename($_FILES["image"]["name"]);
-        move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
-        $imagePath = $targetFile;
-    } elseif (!empty($_POST["imageData"])) {
-        // Jika gambar dikirim dalam bentuk base64
-        $imgData = $_POST["imageData"];
-        $imgData = str_replace(['data:image/png;base64,', 'data:image/jpeg;base64,'], '', $imgData);
-        $imgData = str_replace(' ', '+', $imgData);
-        $fileData = base64_decode($imgData);
-        if (!file_exists("uploads")) mkdir("uploads");
-        $fileName = "uploads/image_" . time() . ".png";
-        file_put_contents($fileName, $fileData);
-        $imagePath = $fileName;
-    }
-} else {
-    // Nilai default (jika halaman dibuka tanpa form)
-    $title        = 'MacBook Air £800';
-    $year         = '2004';
-    $model        = 'Condition: Mint';
-    $amount       = '£800';
-    $payto        = '123-456-789-0';
-    $paymentType  = 'Visa Debit';
-    $holder       = 'Name Here';
-    $accountNum   = '123-456-789-0';
-    $sendMobile   = false;
-    $sendEmail    = false;
-    $mobileNumber = '1234567890, 1234567891';
-    $email        = 'mmfmr29@stoton.ac.uk, fys_06@yahoo.com';
-    $imagePath    = '';
-}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  $title = isset($_POST['title']) ? htmlspecialchars($_POST['title']) : '';
+  $description = isset($_POST['description']) ? htmlspecialchars($_POST['description']) : '';
+  $accountNumber = isset($_POST['account-number']) ? htmlspecialchars($_POST['account-number']) : '';
+  $bank = isset($_POST['bank']) ? htmlspecialchars($_POST['bank']) : '';
+  $accountHolder = isset($_POST['account-holder']) ? htmlspecialchars($_POST['account-holder']) : '';
+  $mobileNumber = isset($_POST['mobile-number']) ? htmlspecialchars($_POST['mobile-number']) : '';
+  $email = isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '';
+  $imageData = isset($_POST['imageData']) ? $_POST['imageData'] : '';
+  
+  $sendMobile = isset($_POST['send-mobile']) ? 'checked' : '';
+  $sendEmail = isset($_POST['send-email']) ? 'checked' : '';
 ?>
 <!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Produk</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #e0e0e0;
-      padding: 8px 20px;
-      font-size: 1px;
-      font-weight: bold;
-      text-align: center;
-      border-bottom: 1px solid #ccc;
-    }
-    nav {
-      background-color: #f0f0f0;
-      padding: 10px;
-      text-align: center;
-      border-bottom: 2px solid #ccc;
-    }
-    nav a {
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-      margin: 0 15px;
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: white;
-    }
-    nav a:hover {
-      background-color: #e0e0e0;
-    }
-    .container {
-      width: 900px;
-      background: white;
-      margin: 40px auto;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      display: flex;
-      gap: 40px;
-    }
-    .left {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #ccc;
-      min-height: 250px;
-      background-color: #fafafa;
-      border-radius: 6px;
-    }
-    .left img {
-      max-width: 98%;
-      max-height: 200px;
-      object-fit: contain;
-      border-radius: 6px;
-    }
-    .right {
-      flex: 2;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    td {
-      padding: 8px 5px;
-      vertical-align: top;
-    }
-    td:first-child {
-      font-weight: bold;
-      width: 35%;
-    }
-    .btn-pay {
-      display: block;
-      background-color: #4CAF50;
-      color: white;
-      text-align: center;
-      padding: 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    .btn-pay:hover {
-      background-color: #3e8e41;
-    }
-  </style>
-</head>
-<body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate Nbr Link - Output</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="index.html">Generate Link</a>
+      <a href="#">Transaction History</a>
+      <a href="#">Policy</a>
+      <a href="#">Logout</a>
+    </nav>
 
-<header>Web Produk</header>
+    <div id="container-form-nbr-link">
+      <div class="form-layout">
+        <div class="left-side">
+          <div class="upload-box">
+            <div class="image-placeholder" id="imagePreview">
+              <?php if (!empty($imageData)): ?>
+                <img src="<?= $imageData ?>" alt="Preview" style="width:100%; height:180px; object-fit:contain;">
+              <?php else: ?>
+                <span>No Image</span>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
 
-<nav>
-  <a href="#">Home</a>
-  <a href="#">Register</a>
-  <a href="#">Policy</a>
-  <a href="#">About</a>
-</nav>
+        <div class="right-side">
+          <form
+            action="output.php"
+            method="POST"
+            enctype="multipart/form-data"
+            id="nbr-link-form"
+          >
+            <div class="form-group">
+              <label for="title">Title Here:</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value="<?= $title ?>"
+                readonly
+              />
+            </div>
 
-<div class="container">
-  <div class="left">
-    <?php if ($imagePath): ?>
-      <img src="<?= htmlspecialchars($imagePath) ?>" alt="Product Image">
-    <?php else: ?>
-      <p><em>No Image</em></p>
-    <?php endif; ?>
-  </div>
+            <div class="form-group">
+              <label for="description">Description:</label>
+              <textarea
+                id="description"
+                name="description"
+                rows="4"
+                readonly
+              ><?= $description ?></textarea>
+            </div>
 
-  <div class="right">
-    <table border="0" cellpadding="5" cellspacing="0" width="100%">
-      <tr>
-        <td><b>Title Here:</b></td>
-        <td><?= htmlspecialchars($title) ?></td>
-      </tr>
-      <tr>
-        <td><b>Description:</b></td>
-        <td>Year: <?= htmlspecialchars($year) ?><br>Model: <?= htmlspecialchars($model) ?></td>
-      </tr>
-      <tr>
-        <td><b>Total Amount:</b></td>
-        <td><?= htmlspecialchars($amount) ?></td>
-      </tr>
-      <tr>
-        <td><b>Pay to:</b></td>
-        <td><?= htmlspecialchars($payto) ?></td>
-      </tr>
-      <tr>
-        <td><b>Payment Type:</b></td>
-        <td><?= htmlspecialchars($paymentType) ?></td>
-      </tr>
-      <tr>
-        <td><b>Account Holder:</b></td>
-        <td><?= htmlspecialchars($holder) ?></td>
-      </tr>
-      <tr>
-        <td><b>Account No:</b></td>
-        <td><?= htmlspecialchars($accountNum) ?></td>
-      </tr>
-      <tr>
-        <td><b>Notification:</b></td>
-        <td>
-          <?php if ($sendMobile) echo "☑ Send to Mobile Phone<br>"; ?>
-          <?php if ($sendEmail) echo "☑ Email me copy of transaction"; ?>
-        </td>
-      </tr>
-      <tr>
-        <td><b>Send to Mobile Phone:</b></td>
-        <td><?= htmlspecialchars($mobileNumber) ?></td>
-      </tr>
-      <tr>
-        <td><b>Send to Email:</b></td>
-        <td><?= htmlspecialchars($email) ?></td>
-      </tr>
-    </table>
-    <a href="#" class="btn-pay">Confirm Payment</a>
-  </div>
-</div>
+            <div class="form-group">
+              <label for="account-number">Account Number:</label>
+              <input
+                type="text"
+                id="account-number"
+                name="account-number"
+                value="<?= $accountNumber ?>"
+                readonly
+              />
+            </div>
 
-</body>
+            <div class="form-group">
+              <label for="bank">Bank:</label>
+              <select id="bank" name="bank" disabled>
+                <option <?= $bank == 'Choose Your Bank' ? 'selected' : '' ?>>Choose Your Bank</option>
+                <option <?= $bank == 'HSBC' ? 'selected' : '' ?>>HSBC</option>
+                <option <?= $bank == 'BCA' ? 'selected' : '' ?>>BCA</option>
+                <option <?= $bank == 'BNI' ? 'selected' : '' ?>>BNI</option>
+                <option <?= $bank == 'Mandiri' ? 'selected' : '' ?>>Mandiri</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="account-holder">Account Holder:</label>
+              <input
+                type="text"
+                id="account-holder"
+                name="account-holder"
+                value="<?= $accountHolder ?>"
+                readonly
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Transaction:</label>
+              <p class="note">
+                * If the transaction is for 3 persons, choose 3 from the
+                drop-down list
+              </p>
+              <div class="checkboxes">
+                <label>
+                  <input type="checkbox" name="send-mobile" value="1" <?= $sendMobile ?> disabled />
+                  Send to Mobile Phone
+                </label>
+                <label>
+                  <input type="checkbox" name="send-email" value="1" <?= $sendEmail ?> disabled />
+                  Send to Email
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="mobile-number">Send to Mobile Phone:</label>
+              <input
+                type="text"
+                id="mobile-number"
+                name="mobile-number"
+                value="<?= $mobileNumber ?>"
+                readonly
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Send to Email:</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value="<?= $email ?>"
+                readonly
+              />
+            </div>
+
+            <div class="button-group">
+              <button type="button" onclick="window.location.href='index.html'">
+                Create New Link
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
+<?php
+} else {
+  echo "<script>alert('Please fill out the form first.'); window.location.href='index.html';</script>";
+  exit();
+}
+?>
